@@ -1,1 +1,60 @@
+# Git commands
+echo -e "Command loaded";
 
+alias gs='git status'
+
+function gup()
+{
+    echo_and_call "git pull --ff-only origin $1"
+    pullResult=$?
+
+    if [ "$pullResult" -eq 128 ];then
+        echo -e "\E[36mFast forward not possible, rebasing now... \E[m" >&1
+        __rebase $1
+    elif [ "$pullResult" -eq 0 ];then
+        echo -e "\E[36mSuccessful fast forward, no rebase required\E[m" >&1
+    else
+        echo -e "\E[36mFailure - See reason above\E[m" >&1
+    fi
+}
+
+function __rebase()
+{
+    if [ "$1" ];then
+        BRANCH=$1
+    else
+        BRANCH=`current_git_branch`
+    fi
+
+    echo_and_call "git rebase -p -m origin/$BRANCH"
+}
+
+function gp()
+{
+    if [ "$1" ];then
+        BRANCH=$1
+    else
+        BRANCH=`current_git_branch`
+    fi
+
+    echo_and_call "git push origin $BRANCH"
+}
+
+
+function current_git_branch()
+{
+    ref=`git symbolic-ref -q HEAD`
+    if [ $? eq "0" ];then
+        echo $ref | awk "BEGIN{ FS\"/\" } { print \$3 }"
+    else
+        echo "Detached HEAD"
+    fi
+}
+
+function echo_and_call()
+{
+    if [ "$1" ]; then
+        echo -e "\E[36m$1\E[m" >&1
+        $1
+    fi
+}

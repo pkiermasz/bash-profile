@@ -1,4 +1,4 @@
-if [-f .bash_commands]
+if [ -f ~/.bash_commands ]
 then
-source .bash_commands
+ source ~/.bash_commands
 fi
