@@ -44,7 +44,7 @@ function gp()
 function current_git_branch()
 {
     ref=`git symbolic-ref -q HEAD`
-    if [ $? eq "0" ];then
+    if [ $? -eq "0" ]; then
         echo $ref | awk "BEGIN{ FS\"/\" } { print \$3 }"
     else
         echo "Detached HEAD"
